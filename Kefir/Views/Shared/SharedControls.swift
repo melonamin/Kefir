@@ -53,6 +53,7 @@ struct ModernSlider: View {
             )
         }
         .frame(height: 22)
+        .focusable(false)
     }
 }
 
@@ -81,6 +82,7 @@ struct ControlButton: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .focusable(false)
     }
 }
 
@@ -110,6 +112,7 @@ struct PlayButton: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .focusable(false)
     }
 }
 

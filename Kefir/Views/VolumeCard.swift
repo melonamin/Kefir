@@ -52,6 +52,7 @@ struct VolumeCard: View {
                 )
             }
             .frame(maxWidth: .infinity)
+            .focusable(false)
         }
         .padding(20)
         .background(Color(NSColor.controlBackgroundColor))

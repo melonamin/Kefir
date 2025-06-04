@@ -29,6 +29,7 @@ struct SourceButton: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
+        .focusable(false)
     }
     
     private var sourceIcon: String {

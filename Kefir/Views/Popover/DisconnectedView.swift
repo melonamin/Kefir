@@ -48,6 +48,7 @@ struct DisconnectedView: View {
                     .cornerRadius(8)
             }
             .buttonStyle(PlainButtonStyle())
+            .focusable(false)
             
             Spacer()
         }

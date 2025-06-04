@@ -121,6 +121,7 @@ struct NowPlayingCard: View {
                         .foregroundColor(isMuted ? .accentColor : .secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
+                .focusable(false)
             }
         }
         .padding(20)

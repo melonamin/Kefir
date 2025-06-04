@@ -64,6 +64,7 @@ struct SpeakersTab: View {
                         Image(systemName: "plus")
                     }
                     .buttonStyle(BorderlessButtonStyle())
+                    .focusable(false)
                     
                     Button(action: {
                         if let speaker = selectedSpeaker {
@@ -76,6 +77,7 @@ struct SpeakersTab: View {
                         Image(systemName: "minus")
                     }
                     .buttonStyle(BorderlessButtonStyle())
+                    .focusable(false)
                     .disabled(selectedSpeaker == nil)
                     
                     Spacer()
@@ -88,6 +90,7 @@ struct SpeakersTab: View {
                         }
                     }
                     .disabled(selectedSpeaker == nil || selectedSpeaker?.isDefault == true)
+                    .focusable(false)
                 }
                 .padding(8)
                 .background(Color(NSColor.controlBackgroundColor))
@@ -243,15 +246,17 @@ struct AboutTab: View {
             // Links
             VStack(spacing: 12) {
                 HStack(spacing: 20) {
-                    Link(destination: URL(string: "https://github.com/yourusername/kef")!) {
+                    Link(destination: URL(string: "https://github.com/melonamin/kefir")!) {
                         Label("GitHub", systemImage: "link")
                             .font(.system(size: 13))
                     }
+                    .focusable(false)
                     
-                    Link(destination: URL(string: "https://github.com/yourusername/kef/issues")!) {
+                    Link(destination: URL(string: "https://github.com/melonamin/kefir/issues")!) {
                         Label("Report Issue", systemImage: "exclamationmark.bubble")
                             .font(.system(size: 13))
                     }
+                    .focusable(false)
                 }
                 
                 Divider()

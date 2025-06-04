@@ -54,6 +54,7 @@ struct BottomBar: View {
                         }
                     }
                     .menuStyle(BorderlessButtonMenuStyle())
+                    .focusable(false)
                     
                     Menu {
                         ForEach(KEFSource.allCases, id: \.self) { source in
@@ -81,6 +82,7 @@ struct BottomBar: View {
                         .foregroundColor(.secondary)
                     }
                     .menuStyle(BorderlessButtonMenuStyle())
+                    .focusable(false)
                     Spacer()
                     
                     // Settings button
@@ -90,6 +92,7 @@ struct BottomBar: View {
                             .foregroundColor(.secondary)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .focusable(false)
                     
                     // Power button
                     Button(action: {
@@ -100,6 +103,7 @@ struct BottomBar: View {
                             .foregroundColor(.red)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .focusable(false)
                     .confirmationDialog(
                         "Turn off speaker?",
                         isPresented: $showingPowerOffConfirmation,
@@ -166,6 +170,7 @@ struct BottomBar: View {
                         }
                     }
                     .menuStyle(BorderlessButtonMenuStyle())
+                    .focusable(false)
                     
                     Spacer()
                     
@@ -176,6 +181,7 @@ struct BottomBar: View {
                             .foregroundColor(.secondary)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .focusable(false)
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)

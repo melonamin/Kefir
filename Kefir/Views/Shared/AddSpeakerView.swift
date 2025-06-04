@@ -45,6 +45,7 @@ struct AddSpeakerView: View {
                     dismiss()
                 }
                 .keyboardShortcut(.escape)
+                .focusable(false)
                 
                 Button("Test Connection") {
                     Task {
@@ -52,6 +53,7 @@ struct AddSpeakerView: View {
                     }
                 }
                 .disabled(speakerName.isEmpty || speakerHost.isEmpty || isLoading)
+                .focusable(false)
                 
                 Button("Add") {
                     Task {
@@ -61,6 +63,7 @@ struct AddSpeakerView: View {
                 .keyboardShortcut(.return)
                 .disabled(speakerName.isEmpty || speakerHost.isEmpty || isLoading)
                 .buttonStyle(.borderedProminent)
+                .focusable(false)
             }
             
             if isLoading {
