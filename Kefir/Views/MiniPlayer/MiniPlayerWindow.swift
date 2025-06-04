@@ -4,7 +4,7 @@ import AppKit
 class MiniPlayerWindow: NSWindow {
     init() {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 280, height: 74),
+            contentRect: NSRect(x: 0, y: 0, width: Constants.UI.miniPlayerWidth, height: Constants.UI.miniPlayerHeight),
             styleMask: [.borderless, .hudWindow],
             backing: .buffered,
             defer: false

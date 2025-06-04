@@ -103,8 +103,14 @@ struct MiniPlayerView: View {
                             
                             // Volume controls
                             MiniVolumeControl(
-                                volume: $appState.currentVolume,
-                                isMuted: $appState.isMuted,
+                                volume: Binding(
+                                    get: { appState.currentVolume },
+                                    set: { _ in }
+                                ),
+                                isMuted: Binding(
+                                    get: { appState.isMuted },
+                                    set: { _ in }
+                                ),
                                 isDragging: $isDraggingVolume,
                                 onVolumeChange: { newVolume in
                                     Task { await appState.setVolume(newVolume) }
@@ -248,9 +254,9 @@ struct VisualEffectBackground: NSViewRepresentable {
         let state = AppState()
         state.isConnected = true
         state.powerStatus = .powerOn
-        state.currentVolume = 50
-        state.isPlaying = true
-        state.currentTrack = SongInfo(
+        state.volume.currentVolume = 50
+        state.playback.isPlaying = true
+        state.playback.currentTrack = SongInfo(
             title: "Bohemian Rhapsody",
             artist: "Queen",
             album: "A Night at the Opera"

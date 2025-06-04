@@ -14,8 +14,14 @@ struct ConnectedView: View {
                 isPlaying: appState.isPlaying,
                 trackPosition: appState.trackPosition,
                 trackDuration: appState.trackDuration,
-                volume: $appState.currentVolume,
-                isMuted: $appState.isMuted,
+                volume: Binding(
+                    get: { appState.currentVolume },
+                    set: { _ in }
+                ),
+                isMuted: Binding(
+                    get: { appState.isMuted },
+                    set: { _ in }
+                ),
                 isDragging: $isDraggingVolume,
                 onPrevious: { Task { await appState.previousTrack() } },
                 onPlayPause: { Task { await appState.togglePlayPause() } },
@@ -36,8 +42,14 @@ struct ConnectedView: View {
         } else {
             // Show simple volume control for non-streaming sources
             VolumeCard(
-                volume: $appState.currentVolume,
-                isMuted: $appState.isMuted,
+                volume: Binding(
+                    get: { appState.currentVolume },
+                    set: { _ in }
+                ),
+                isMuted: Binding(
+                    get: { appState.isMuted },
+                    set: { _ in }
+                ),
                 isDragging: $isDraggingVolume,
                 onVolumeChange: { newVolume in
                     Task { await appState.setVolume(newVolume) }
