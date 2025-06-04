@@ -96,46 +96,5 @@ struct NowPlayingCard: View {
         }
         .padding(20)
         .background(Color(NSColor.controlBackgroundColor))
-        .cornerRadius(12)
     }
 }
-
-//#Preview {
-//    @State var volume = 50
-//    @State var isMuted = false
-//    @State var isDragging = false
-//    
-//    let sampleTrack = SongInfo(
-//        title: "Sample Song",
-//        artist: "Sample Artist",
-//        album: "Sample Album",
-//        albumArtist: nil,
-//        year: nil,
-//        duration: 240,
-//        playerState: nil,
-//        position: nil,
-//        resolution: nil,
-//        source: nil,
-//        radio: nil,
-//        radioStation: nil,
-//        sampleRate: nil,
-//        codec: nil,
-//        playbackType: nil,
-//        coverURL: nil
-//    )
-//    
-//    NowPlayingCard(
-//        track: sampleTrack,
-//        isPlaying: true,
-//        volume: $volume,
-//        isMuted: $isMuted,
-//        isDragging: $isDragging,
-//        onPrevious: { },
-//        onPlayPause: { },
-//        onNext: { },
-//        onVolumeChange: { _ in },
-//        onMuteToggle: { },
-//        onAdjust: { _ in }
-//    )
-//    .frame(width: 360)
-//}

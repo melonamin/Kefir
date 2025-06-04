@@ -4,6 +4,7 @@ import SwiftKEF
 struct BottomBar: View {
     @ObservedObject var appState: AppState
     @Binding var showingAddSpeaker: Bool
+    @State private var showingPowerOffConfirmation = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -11,6 +12,10 @@ struct BottomBar: View {
             if let speaker = appState.currentSpeaker, appState.isConnected && appState.powerStatus == .powerOn {
                 // Main bottom bar
                 HStack {
+                    Circle()
+                        .fill(Color.green)
+                        .frame(width: 8, height: 8)
+                    
                     // Speaker selector
                     Menu {
                         ForEach(appState.speakers) { speaker in
@@ -37,14 +42,16 @@ struct BottomBar: View {
                         }
                     } label: {
                         HStack(spacing: 6) {
-                            Image(systemName: "hifispeaker.2.fill")
-                                .font(.system(size: 14))
-                            Text(speaker.name)
-                                .font(.system(size: 13))
-                            Image(systemName: "chevron.up.chevron.down")
-                                .font(.system(size: 10))
+                            HStack(spacing: 6) {
+                                Image(systemName: "hifispeaker.2.fill")
+                                    .font(.system(size: 14))
+                                Text(speaker.name)
+                                    .font(.system(size: 13))
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.system(size: 10))
+                            }
+                            .foregroundColor(.secondary)
                         }
-                        .foregroundColor(.secondary)
                     }
                     .menuStyle(BorderlessButtonMenuStyle())
                     
@@ -86,11 +93,87 @@ struct BottomBar: View {
                     
                     // Power button
                     Button(action: {
-                        Task { await appState.togglePower() }
+                        showingPowerOffConfirmation = true
                     }) {
                         Image(systemName: "power")
                             .font(.system(size: 14))
                             .foregroundColor(.red)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .confirmationDialog(
+                        "Turn off speaker?",
+                        isPresented: $showingPowerOffConfirmation,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Turn Off", role: .destructive) {
+                            Task { await appState.togglePower() }
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("This will put \(speaker.name) into standby mode.")
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Color(NSColor.controlBackgroundColor))
+            } else {
+                // Simplified bottom bar when not connected or in standby
+                HStack {
+                    // Show different indicator based on connection status
+                    if appState.isConnected {
+                        Circle()
+                            .fill(Color.orange)
+                            .frame(width: 8, height: 8)
+                    } else {
+                        Circle()
+                            .fill(Color.red)
+                            .frame(width: 8, height: 8)
+                    }
+                    Menu {
+                        ForEach(appState.speakers) { speaker in
+                            Button(action: {
+                                Task { await appState.selectSpeaker(speaker) }
+                            }) {
+                                HStack {
+                                    Text(speaker.name)
+                                    if speaker.isDefault {
+                                        Text("(default)")
+                                            .font(.caption)
+                                    }
+                                    if speaker.id == appState.currentSpeaker?.id {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        Button("Add Speaker...") {
+                            showingAddSpeaker = true
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "hifispeaker.2.fill")
+                                    .font(.system(size: 14))
+                                Text("Speakers")
+                                    .font(.system(size: 13))
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.system(size: 10))
+                            }
+                            .foregroundColor(.secondary)
+                        }
+                    }
+                    .menuStyle(BorderlessButtonMenuStyle())
+                    
+                    Spacer()
+                    
+                    // Settings button
+                    SettingsLink {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 14))
+                            .foregroundColor(.secondary)
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
@@ -112,15 +195,4 @@ struct BottomBar: View {
         case .usb: return "cable.connector"
         }
     }
-}
-
-#Preview {
-    @State var showingAddSpeaker = false
-    let appState = AppState()
-    
-    return BottomBar(
-        appState: appState,
-        showingAddSpeaker: $showingAddSpeaker
-    )
-    .frame(width: 360)
 }

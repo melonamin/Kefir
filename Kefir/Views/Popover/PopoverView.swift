@@ -27,7 +27,6 @@ struct PopoverView: View {
                 showingAddSpeaker: $showingAddSpeaker
             )
         }
-        .frame(width: 360, height: 420)
         .background(Color(NSColor.windowBackgroundColor))
         .sheet(isPresented: $showingAddSpeaker) {
             AddSpeakerView(appState: appState)
