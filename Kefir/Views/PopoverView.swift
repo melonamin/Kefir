@@ -44,53 +44,50 @@ struct ConnectedView: View {
     @State private var isDraggingVolume = false
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Header
-                SpeakerHeader(
-                    name: speaker.name,
-                    isConnected: true,
-                    powerAction: { Task { await appState.togglePower() } }
-                )
-                
-                // Volume Control Card
-                VolumeCard(
-                    volume: $appState.currentVolume,
-                    isMuted: $appState.isMuted,
-                    isDragging: $isDraggingVolume,
-                    onVolumeChange: { newVolume in
-                        Task { await appState.setVolume(newVolume) }
-                    },
-                    onMuteToggle: {
-                        Task { await appState.toggleMute() }
-                    },
-                    onAdjust: { amount in
-                        Task { await appState.adjustVolume(by: amount) }
-                    }
-                )
-                
-                // Source Card
-                SourceCard(
-                    currentSource: appState.currentSource,
-                    onSourceChange: { source in
-                        Task { await appState.setSource(source) }
-                    }
-                )
-                
-                // Now Playing Card (if applicable)
-                if appState.currentSource == .wifi || appState.currentSource == .bluetooth {
-                    if let track = appState.currentTrack {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Player Card - always show for streaming sources
+                    if appState.currentSource == .wifi || appState.currentSource == .bluetooth {
                         NowPlayingCard(
-                            track: track,
+                            track: appState.currentTrack,
                             isPlaying: appState.isPlaying,
+                            volume: $appState.currentVolume,
+                            isMuted: $appState.isMuted,
+                            isDragging: $isDraggingVolume,
                             onPrevious: { Task { await appState.previousTrack() } },
                             onPlayPause: { Task { await appState.togglePlayPause() } },
-                            onNext: { Task { await appState.nextTrack() } }
+                            onNext: { Task { await appState.nextTrack() } },
+                            onVolumeChange: { newVolume in
+                                Task { await appState.setVolume(newVolume) }
+                            },
+                            onMuteToggle: {
+                                Task { await appState.toggleMute() }
+                            },
+                            onAdjust: { amount in
+                                Task { await appState.adjustVolume(by: amount) }
+                            }
+                        )
+                    } else {
+                        // Show simple volume control for non-streaming sources
+                        VolumeCard(
+                            volume: $appState.currentVolume,
+                            isMuted: $appState.isMuted,
+                            isDragging: $isDraggingVolume,
+                            onVolumeChange: { newVolume in
+                                Task { await appState.setVolume(newVolume) }
+                            },
+                            onMuteToggle: {
+                                Task { await appState.toggleMute() }
+                            },
+                            onAdjust: { amount in
+                                Task { await appState.adjustVolume(by: amount) }
+                            }
                         )
                     }
                 }
+                .padding(20)
             }
-            .padding(20)
         }
     }
 }
@@ -240,48 +237,52 @@ struct SourceCard: View {
 }
 
 struct NowPlayingCard: View {
-    let track: SongInfo
+    let track: SongInfo?
     let isPlaying: Bool
+    @Binding var volume: Int
+    @Binding var isMuted: Bool
+    @Binding var isDragging: Bool
     let onPrevious: () -> Void
     let onPlayPause: () -> Void
     let onNext: () -> Void
+    let onVolumeChange: (Int) -> Void
+    let onMuteToggle: () -> Void
+    let onAdjust: (Int) -> Void
     
     var body: some View {
         VStack(spacing: 20) {
             // Track info
             HStack(spacing: 16) {
                 // Album art
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(LinearGradient(
-                            colors: [Color.accentColor.opacity(0.3), Color.accentColor.opacity(0.1)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ))
-                        .frame(width: 60, height: 60)
-                    
-                    Image(systemName: "music.note")
-                        .font(.system(size: 28))
-                        .foregroundColor(.accentColor)
-                }
+                AlbumArtView(coverURL: track?.coverURL)
+                    .frame(width: 60, height: 60)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    if let title = track.title {
-                        Text(title)
+                    if let track = track {
+                        if let title = track.title {
+                            Text(title)
+                                .font(.system(size: 15, weight: .medium))
+                                .lineLimit(1)
+                        }
+                        if let artist = track.artist {
+                            Text(artist)
+                                .font(.system(size: 13))
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
+                        if let album = track.album {
+                            Text(album)
+                                .font(.system(size: 12))
+                                .foregroundColor(Color.secondary.opacity(0.5))
+                                .lineLimit(1)
+                        }
+                    } else {
+                        Text("No track info")
                             .font(.system(size: 15, weight: .medium))
-                            .lineLimit(1)
-                    }
-                    if let artist = track.artist {
-                        Text(artist)
+                            .foregroundColor(.secondary)
+                        Text("Ready to play")
                             .font(.system(size: 13))
                             .foregroundColor(.secondary)
-                            .lineLimit(1)
-                    }
-                    if let album = track.album {
-                        Text(album)
-                            .font(.system(size: 12))
-                            .foregroundColor(Color.secondary.opacity(0.5))
-                            .lineLimit(1)
                     }
                 }
                 
@@ -290,6 +291,30 @@ struct NowPlayingCard: View {
                 if isPlaying {
                     SoundWaveAnimation()
                 }
+            }
+            
+            // Volume control
+            VStack(spacing: 12) {
+                HStack {
+                    Text("\(volume)%")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(isDragging ? .accentColor : .secondary)
+                    Spacer()
+                    Button(action: onMuteToggle) {
+                        Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(isMuted ? .accentColor : .secondary)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                
+                ModernSlider(
+                    value: Binding(
+                        get: { Double(volume) },
+                        set: { onVolumeChange(Int($0)) }
+                    ),
+                    isDragging: $isDragging
+                )
             }
             
             // Playback controls
@@ -490,65 +515,137 @@ struct BottomBar: View {
     @Binding var showingAddSpeaker: Bool
     
     var body: some View {
-        HStack {
-            // Speaker selector
-            Menu {
-                ForEach(appState.speakers) { speaker in
-                    Button(action: {
-                        Task { await appState.selectSpeaker(speaker) }
-                    }) {
-                        HStack {
-                            Text(speaker.name)
-                            if speaker.isDefault {
-                                Text("(default)")
-                                    .font(.caption)
+        VStack(spacing: 0) {
+            // Speaker info and source selection
+            if let speaker = appState.currentSpeaker, appState.isConnected && appState.powerStatus == .powerOn {
+                HStack {
+                    // Speaker info
+                    HStack(spacing: 8) {
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 6, height: 6)
+                        Text(speaker.name)
+                            .font(.system(size: 13, weight: .medium))
+                    }
+                    
+                    Spacer()
+                    
+                    // Source selector
+                    Menu {
+                        ForEach(KEFSource.allCases, id: \.self) { source in
+                            Button(action: {
+                                Task { await appState.setSource(source) }
+                            }) {
+                                HStack {
+                                    Image(systemName: sourceIcon(for: source))
+                                    Text(source.displayName)
+                                    if source == appState.currentSource {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
                             }
-                            if speaker.id == appState.currentSpeaker?.id {
-                                Image(systemName: "checkmark")
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: sourceIcon(for: appState.currentSource))
+                                .font(.system(size: 12))
+                            Text(appState.currentSource.displayName)
+                                .font(.system(size: 12))
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 8))
+                        }
+                        .foregroundColor(.secondary)
+                    }
+                    .menuStyle(BorderlessButtonMenuStyle())
+                    
+                    // Power button
+                    Button(action: {
+                        Task { await appState.togglePower() }
+                    }) {
+                        Image(systemName: "power")
+                            .font(.system(size: 12))
+                            .foregroundColor(.red)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 8)
+                .background(Color(NSColor.quaternarySystemFill))
+            }
+            
+            // Main bottom bar
+            HStack {
+                // Speaker selector
+                Menu {
+                    ForEach(appState.speakers) { speaker in
+                        Button(action: {
+                            Task { await appState.selectSpeaker(speaker) }
+                        }) {
+                            HStack {
+                                Text(speaker.name)
+                                if speaker.isDefault {
+                                    Text("(default)")
+                                        .font(.caption)
+                                }
+                                if speaker.id == appState.currentSpeaker?.id {
+                                    Image(systemName: "checkmark")
+                                }
                             }
                         }
                     }
+                    
+                    Divider()
+                    
+                    Button("Add Speaker...") {
+                        showingAddSpeaker = true
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "hifispeaker.2.fill")
+                            .font(.system(size: 14))
+                        Text("Speakers")
+                            .font(.system(size: 13))
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundColor(.secondary)
                 }
+                .menuStyle(BorderlessButtonMenuStyle())
                 
-                Divider()
+                Spacer()
                 
-                Button("Add Speaker...") {
-                    showingAddSpeaker = true
-                }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "hifispeaker.2.fill")
+                // Settings button
+                SettingsLink {
+                    Image(systemName: "gearshape")
                         .font(.system(size: 14))
-                    Text("Speakers")
-                        .font(.system(size: 13))
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
                 }
-                .foregroundColor(.secondary)
+                .buttonStyle(PlainButtonStyle())
+                
+                // Quit button
+                Button(action: { NSApplication.shared.terminate(nil) }) {
+                    Image(systemName: "power")
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
-            .menuStyle(BorderlessButtonMenuStyle())
-            
-            Spacer()
-            
-            // Settings button
-            SettingsLink {
-                Image(systemName: "gearshape")
-                    .font(.system(size: 14))
-                    .foregroundColor(.secondary)
-            }
-            .buttonStyle(PlainButtonStyle())
-            
-            // Quit button
-            Button(action: { NSApplication.shared.terminate(nil) }) {
-                Image(systemName: "power")
-                    .font(.system(size: 14))
-                    .foregroundColor(.secondary)
-            }
-            .buttonStyle(PlainButtonStyle())
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .background(Color(NSColor.controlBackgroundColor))
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .background(Color(NSColor.controlBackgroundColor))
+    }
+    
+    private func sourceIcon(for source: KEFSource) -> String {
+        switch source {
+        case .wifi: return "wifi"
+        case .bluetooth: return "bluetooth"
+        case .tv: return "tv"
+        case .optic: return "optic.fill"
+        case .coaxial: return "cable.connector"
+        case .analog: return "cable.connector.horizontal"
+        case .usb: return "cable.connector"
+        }
     }
 }
 
@@ -707,6 +804,83 @@ struct StandbyView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - Album Art View
+
+struct AlbumArtView: View {
+    let coverURL: String?
+    @State private var albumImage: NSImage?
+    @State private var isLoading = false
+    @State private var currentURL: String?
+    
+    var body: some View {
+        ZStack {
+            if let image = albumImage {
+                Image(nsImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 60, height: 60)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            } else {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(LinearGradient(
+                        colors: [Color.accentColor.opacity(0.3), Color.accentColor.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                
+                if isLoading {
+                    ProgressView()
+                        .scaleEffect(0.5)
+                } else {
+                    Image(systemName: "music.note")
+                        .font(.system(size: 28))
+                        .foregroundColor(.accentColor)
+                }
+            }
+        }
+        .task(id: coverURL) {
+            await loadImage()
+        }
+    }
+    
+    private func loadImage() async {
+        // Reset state if URL changes or is nil
+        if coverURL != currentURL {
+            albumImage = nil
+            currentURL = coverURL
+        }
+        
+        guard let urlString = coverURL,
+              let url = URL(string: urlString) else {
+            albumImage = nil
+            isLoading = false
+            return
+        }
+        
+        // Don't reload if we already have the image for this URL
+        if currentURL == urlString && albumImage != nil {
+            return
+        }
+        
+        isLoading = true
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            if let image = NSImage(data: data) {
+                albumImage = image
+                isLoading = false
+            } else {
+                albumImage = nil
+                isLoading = false
+            }
+        } catch {
+            albumImage = nil
+            isLoading = false
+        }
     }
 }
 

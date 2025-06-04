@@ -222,6 +222,8 @@ class AppState: ObservableObject {
             } else {
                 try await speaker.powerOn()
             }
+            // Add a small delay before updating status to allow speaker to process the command
+            try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
             await updateStatus()
         } catch {
             print("Failed to toggle power: \(error)")
