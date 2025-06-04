@@ -18,7 +18,7 @@ struct NowPlayingCard: View {
     let onSeek: (Int64) -> Void
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 10) {
             // Track info
             HStack(spacing: 16) {
                 // Album art

@@ -55,14 +55,16 @@ actor ConfigurationManager {
         
         // Load or create configuration
         if FileManager.default.fileExists(atPath: configFile.path),
-           let data = try? Data(contentsOf: configFile),
-           let config = try? JSONDecoder().decode(Configuration.self, from: data) {
-            self.configuration = config
+           let data = try? Data(contentsOf: configFile) {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            if let config = try? decoder.decode(Configuration.self, from: data) {
+                self.configuration = config
+            } else {
+                self.configuration = Configuration()
+            }
         } else {
             self.configuration = Configuration()
-            Task {
-                try? await save()
-            }
         }
     }
     
