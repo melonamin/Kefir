@@ -3,6 +3,7 @@ import SwiftKEF
 
 struct PopoverView: View {
     @ObservedObject var appState: AppState
+    let appDelegate: AppDelegate
     @State private var showingAddSpeaker = false
     
     var body: some View {
@@ -24,9 +25,11 @@ struct PopoverView: View {
             
             BottomBar(
                 appState: appState,
+                appDelegate: appDelegate,
                 showingAddSpeaker: $showingAddSpeaker
             )
         }
+        .frame(width: 400)
         .background(Color(NSColor.windowBackgroundColor))
         .sheet(isPresented: $showingAddSpeaker) {
             AddSpeakerView(appState: appState)

@@ -19,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var popover: NSPopover!
     var appState: AppState!
+    var miniPlayerWindowController: MiniPlayerWindowController?
     
     func applicationWillTerminate(_ notification: Notification) {
         Task {
@@ -44,7 +45,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Create popover
         popover = NSPopover()
-        popover.contentViewController = NSHostingController(rootView: PopoverView(appState: appState))
+        popover.contentViewController = NSHostingController(rootView: PopoverView(appState: appState, appDelegate: self))
         popover.behavior = .transient
         popover.animates = true
     }
@@ -59,6 +60,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 // Activate app to ensure popover gets focus
                 NSApp.activate(ignoringOtherApps: true)
             }
+        }
+    }
+    
+    func showMiniPlayer() {
+        print("showMiniPlayer called")
+        DispatchQueue.main.async { [weak self] in
+            if self?.miniPlayerWindowController == nil {
+                print("Creating new mini player")
+                self?.miniPlayerWindowController = MiniPlayerWindowController(appState: self?.appState ?? AppState())
+            }
+            self?.miniPlayerWindowController?.window?.makeKeyAndOrderFront(nil)
+            self?.miniPlayerWindowController?.window?.orderFrontRegardless()
+            print("Mini player window visible: \(self?.miniPlayerWindowController?.window?.isVisible ?? false)")
+        }
+    }
+    
+    func hideMiniPlayer() {
+        DispatchQueue.main.async { [weak self] in
+            self?.miniPlayerWindowController?.window?.close()
+            self?.miniPlayerWindowController = nil
+        }
+    }
+    
+    func toggleMiniPlayer() {
+        print("toggleMiniPlayer called")
+        if miniPlayerWindowController?.window?.isVisible ?? false {
+            print("Hiding mini player")
+            hideMiniPlayer()
+        } else {
+            print("Showing mini player")
+            showMiniPlayer()
         }
     }
 }
@@ -398,6 +430,14 @@ class AppState: ObservableObject {
                 await self?.previousTrack()
             }
         }
+        
+        KeyboardShortcuts.onKeyUp(for: .toggleMiniPlayer) {
+            Task { @MainActor in
+                if let appDelegate = NSApp.delegate as? AppDelegate {
+                    appDelegate.toggleMiniPlayer()
+                }
+            }
+        }
     }
 }
 
@@ -410,4 +450,5 @@ extension KeyboardShortcuts.Name {
     static let playPause = Self("playPause")
     static let nextTrack = Self("nextTrack")
     static let previousTrack = Self("previousTrack")
+    static let toggleMiniPlayer = Self("toggleMiniPlayer")
 }

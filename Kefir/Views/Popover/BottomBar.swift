@@ -3,6 +3,7 @@ import SwiftKEF
 
 struct BottomBar: View {
     @ObservedObject var appState: AppState
+    let appDelegate: AppDelegate
     @Binding var showingAddSpeaker: Bool
     @State private var showingPowerOffConfirmation = false
     
@@ -12,9 +13,28 @@ struct BottomBar: View {
             if let speaker = appState.currentSpeaker, appState.isConnected && appState.powerStatus == .powerOn {
                 // Main bottom bar
                 HStack {
-                    Circle()
-                        .fill(Color.green)
-                        .frame(width: 8, height: 8)
+                    Button(action: {
+                        showingPowerOffConfirmation = true
+                    }) {
+                        Circle()
+                            .fill(Color.green)
+                            .frame(width: 8, height: 8)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .focusable(false)
+                    .help("Turn off speaker")
+                    .confirmationDialog(
+                        "Turn off speaker?",
+                        isPresented: $showingPowerOffConfirmation,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Turn Off", role: .destructive) {
+                            Task { await appState.togglePower() }
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("This will put \(speaker.name) into standby mode.")
+                    }
                     
                     // Speaker selector
                     Menu {
@@ -85,6 +105,18 @@ struct BottomBar: View {
                     .focusable(false)
                     Spacer()
                     
+                    // Mini player button
+                    Button(action: {
+                        appDelegate.toggleMiniPlayer()
+                    }) {
+                        Image(systemName: "pip.enter")
+                            .font(.system(size: 14))
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .focusable(false)
+                    .help("Show Mini Player")
+                    
                     // Settings button
                     SettingsLink {
                         Image(systemName: "gearshape")
@@ -93,29 +125,6 @@ struct BottomBar: View {
                     }
                     .buttonStyle(PlainButtonStyle())
                     .focusable(false)
-                    
-                    // Power button
-                    Button(action: {
-                        showingPowerOffConfirmation = true
-                    }) {
-                        Image(systemName: "power")
-                            .font(.system(size: 14))
-                            .foregroundColor(.red)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .focusable(false)
-                    .confirmationDialog(
-                        "Turn off speaker?",
-                        isPresented: $showingPowerOffConfirmation,
-                        titleVisibility: .visible
-                    ) {
-                        Button("Turn Off", role: .destructive) {
-                            Task { await appState.togglePower() }
-                        }
-                        Button("Cancel", role: .cancel) {}
-                    } message: {
-                        Text("This will put \(speaker.name) into standby mode.")
-                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
@@ -125,9 +134,16 @@ struct BottomBar: View {
                 HStack {
                     // Show different indicator based on connection status
                     if appState.isConnected {
-                        Circle()
-                            .fill(Color.orange)
-                            .frame(width: 8, height: 8)
+                        Button(action: {
+                            Task { await appState.togglePower() }
+                        }) {
+                            Circle()
+                                .fill(Color.orange)
+                                .frame(width: 8, height: 8)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .focusable(false)
+                        .help("Turn on speaker")
                     } else {
                         Circle()
                             .fill(Color.red)
@@ -173,6 +189,18 @@ struct BottomBar: View {
                     .focusable(false)
                     
                     Spacer()
+                    
+                    // Mini player button
+                    Button(action: {
+                        appDelegate.toggleMiniPlayer()
+                    }) {
+                        Image(systemName: "pip.enter")
+                            .font(.system(size: 14))
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .focusable(false)
+                    .help("Show Mini Player")
                     
                     // Settings button
                     SettingsLink {

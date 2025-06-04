@@ -176,6 +176,13 @@ struct ShortcutsTab: View {
                 .padding(.vertical, 8)
             }
             
+            GroupBox("Window Control") {
+                VStack(spacing: 12) {
+                    ShortcutRow(label: "Toggle Mini Player", name: .toggleMiniPlayer)
+                }
+                .padding(.vertical, 8)
+            }
+            
             Spacer()
             
             Text("Press shortcuts while recording to set them")
