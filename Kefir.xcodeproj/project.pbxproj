@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FAEFECBE2DF099F400326F2B /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFECBD2DF099F400326F2B /* KeyboardShortcuts */; };
+		FAEFECC12DF09A0D00326F2B /* SwiftKEF in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFECC02DF09A0D00326F2B /* SwiftKEF */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FA0C116F2DEFC83B00D583EA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAEFECBE2DF099F400326F2B /* KeyboardShortcuts in Frameworks */,
+				FAEFECC12DF09A0D00326F2B /* SwiftKEF in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +119,8 @@
 			);
 			name = Kefir;
 			packageProductDependencies = (
+				FAEFECBD2DF099F400326F2B /* KeyboardShortcuts */,
+				FAEFECC02DF09A0D00326F2B /* SwiftKEF */,
 			);
 			productName = Kefir;
 			productReference = FA0C11602DEFC83A00D583EA /* Kefir.app */;
@@ -195,6 +204,10 @@
 			);
 			mainGroup = FA0C11572DEFC83A00D583EA;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FAEFECBC2DF099F400326F2B /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				FAEFECBF2DF09A0D00326F2B /* XCRemoteSwiftPackageReference "SwiftKEF" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FA0C11612DEFC83A00D583EA /* Products */;
 			projectDirPath = "";
@@ -551,6 +564,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FAEFECBC2DF099F400326F2B /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.0;
+			};
+		};
+		FAEFECBF2DF09A0D00326F2B /* XCRemoteSwiftPackageReference "SwiftKEF" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/melonamin/SwiftKEF";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FAEFECBD2DF099F400326F2B /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFECBC2DF099F400326F2B /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+		FAEFECC02DF09A0D00326F2B /* SwiftKEF */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FAEFECBF2DF09A0D00326F2B /* XCRemoteSwiftPackageReference "SwiftKEF" */;
+			productName = SwiftKEF;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FA0C11582DEFC83A00D583EA /* Project object */;
 }

@@ -20,6 +20,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var popover: NSPopover!
     var appState: AppState!
     
+    func applicationWillTerminate(_ notification: Notification) {
+        Task {
+            await appState?.cleanup()
+        }
+    }
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Hide from dock
         NSApp.setActivationPolicy(.accessory)
@@ -71,7 +77,7 @@ class AppState: ObservableObject {
     
     private var speaker: KEFSpeaker?
     private var httpClient: HTTPClient?
-    private var refreshTimer: Timer?
+    private var pollingTask: Task<Void, Never>?
     private let config = ConfigurationManager()
     
     init() {
@@ -81,10 +87,20 @@ class AppState: ObservableObject {
         }
     }
     
+    deinit {
+        pollingTask?.cancel()
+    }
+    
     func cleanup() async {
-        refreshTimer?.invalidate()
+        pollingTask?.cancel()
+        // Wait a bit for the task to complete
+        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+        
+        speaker = nil
+        
         if let client = httpClient {
             try? await client.shutdown()
+            httpClient = nil
         }
     }
     
@@ -99,10 +115,7 @@ class AppState: ObservableObject {
         currentSpeaker = profile
         
         // Clean up existing connection
-        refreshTimer?.invalidate()
-        if let client = httpClient {
-            try? await client.shutdown()
-        }
+        await cleanup()
         
         // Create new connection
         httpClient = HTTPClient(eventLoopGroupProvider: .singleton)
@@ -111,11 +124,9 @@ class AppState: ObservableObject {
         // Initial status update
         await updateStatus()
         
-        // Start refresh timer
-        refreshTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
-            Task {
-                await self.updateStatus()
-            }
+        // Only start polling if connected successfully
+        if isConnected {
+            startPolling()
         }
     }
     
@@ -140,6 +151,16 @@ class AppState: ObservableObject {
         } catch {
             isConnected = false
             print("Status update failed: \(error)")
+            
+            // If it's a connection error, try to reconnect after a delay
+            if !Task.isCancelled {
+                Task {
+                    try? await Task.sleep(nanoseconds: 5_000_000_000) // 5 seconds
+                    if currentSpeaker != nil && !isConnected {
+                        await updateStatus()
+                    }
+                }
+            }
         }
     }
     
@@ -188,7 +209,6 @@ class AppState: ObservableObject {
         do {
             try await speaker.togglePlayPause()
             isPlaying.toggle()
-            await updateStatus()
         } catch {
             print("Failed to toggle playback: \(error)")
         }
@@ -198,7 +218,6 @@ class AppState: ObservableObject {
         guard let speaker = speaker else { return }
         do {
             try await speaker.nextTrack()
-            await updateStatus()
         } catch {
             print("Failed to skip track: \(error)")
         }
@@ -208,9 +227,62 @@ class AppState: ObservableObject {
         guard let speaker = speaker else { return }
         do {
             try await speaker.previousTrack()
-            await updateStatus()
         } catch {
             print("Failed to go to previous track: \(error)")
+        }
+    }
+    
+    private func startPolling() {
+        pollingTask?.cancel()
+        
+        guard let speaker = speaker else { return }
+        
+        pollingTask = Task {
+            let eventStream = await speaker.startPolling(
+                pollInterval: 10,
+                pollSongStatus: true
+            )
+            
+            do {
+                for try await event in eventStream {
+                    if Task.isCancelled { break }
+                    
+                    // Update state based on event
+                    if let status = event.speakerStatus {
+                        powerStatus = status
+                        isConnected = true
+                    }
+                    
+                    if powerStatus == .powerOn {
+                        if let volume = event.volume {
+                            currentVolume = volume
+                        }
+                        
+                        if let source = event.source {
+                            currentSource = source
+                        }
+                        
+                        if let playbackState = event.playbackState {
+                            isPlaying = playbackState == .playing
+                        }
+                        
+                        if let trackInfo = event.songInfo {
+                            currentTrack = trackInfo
+                        } else if isPlaying == false {
+                            currentTrack = nil
+                        }
+                        
+                        if let muted = event.isMuted {
+                            isMuted = muted
+                        }
+                    }
+                }
+            } catch {
+                if !Task.isCancelled {
+                    isConnected = false
+                    print("Polling error: \(error)")
+                }
+            }
         }
     }
     
@@ -219,12 +291,13 @@ class AppState: ObservableObject {
         do {
             if powerStatus == .powerOn {
                 try await speaker.shutdown()
+                powerStatus = .standby
             } else {
                 try await speaker.powerOn()
+                powerStatus = .powerOn
+                // Re-start polling after power on
+                startPolling()
             }
-            // Add a small delay before updating status to allow speaker to process the command
-            try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-            await updateStatus()
         } catch {
             print("Failed to toggle power: \(error)")
         }
@@ -238,6 +311,13 @@ class AppState: ObservableObject {
     }
     
     func removeSpeaker(_ profile: SpeakerProfile) async throws {
+        // If removing current speaker, clean up connection first
+        if currentSpeaker?.id == profile.id {
+            await cleanup()
+            currentSpeaker = nil
+            isConnected = false
+        }
+        
         try await config.removeSpeaker(id: profile.id)
         await loadConfiguration()
     }
