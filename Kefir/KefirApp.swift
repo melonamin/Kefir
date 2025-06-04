@@ -74,6 +74,8 @@ class AppState: ObservableObject {
     @Published var isPlaying = false
     @Published var currentTrack: SongInfo?
     @Published var powerStatus: KEFSpeakerStatus = .standby
+    @Published var trackPosition: Int64 = 0 // in milliseconds
+    @Published var trackDuration: Int = 0 // in milliseconds
     
     private var speaker: KEFSpeaker?
     private var httpClient: HTTPClient?
@@ -144,8 +146,17 @@ class AppState: ObservableObject {
                 
                 if isPlaying {
                     currentTrack = try? await speaker.getSongInformation()
+                    // Try to get position and duration
+                    if let position = try? await speaker.getSongPosition() {
+                        trackPosition = position
+                    }
+                    if let duration = try? await speaker.getSongDuration() {
+                        trackDuration = duration
+                    }
                 } else {
                     currentTrack = nil
+                    trackPosition = 0
+                    trackDuration = 0
                 }
             }
         } catch {
@@ -232,6 +243,12 @@ class AppState: ObservableObject {
         }
     }
     
+    func seekToPosition(_ position: Int64) async {
+        // Note: KEF speakers don't support seeking through their API
+        // This method exists for interface consistency but doesn't actually seek
+        print("Seeking not supported by KEF speakers")
+    }
+    
     private func startPolling() {
         pollingTask?.cancel()
         
@@ -270,10 +287,26 @@ class AppState: ObservableObject {
                             currentTrack = trackInfo
                         } else if isPlaying == false {
                             currentTrack = nil
+                            trackPosition = 0
+                            trackDuration = 0
                         }
                         
                         if let muted = event.isMuted {
                             isMuted = muted
+                        }
+                        
+                        if let position = event.songPosition {
+                            trackPosition = position
+                        }
+                        
+                        if let duration = event.songDuration {
+                            trackDuration = duration
+                        }
+                        
+                        // Reset position/duration when not playing
+                        if !isPlaying {
+                            trackPosition = 0
+                            trackDuration = 0
                         }
                     }
                 }

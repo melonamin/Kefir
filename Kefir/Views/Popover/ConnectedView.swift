@@ -12,6 +12,8 @@ struct ConnectedView: View {
             NowPlayingCard(
                 track: appState.currentTrack,
                 isPlaying: appState.isPlaying,
+                trackPosition: appState.trackPosition,
+                trackDuration: appState.trackDuration,
                 volume: $appState.currentVolume,
                 isMuted: $appState.isMuted,
                 isDragging: $isDraggingVolume,
@@ -26,6 +28,9 @@ struct ConnectedView: View {
                 },
                 onAdjust: { amount in
                     Task { await appState.adjustVolume(by: amount) }
+                },
+                onSeek: { position in
+                    Task { await appState.seekToPosition(position) }
                 }
             )
         } else {

@@ -4,6 +4,8 @@ import SwiftKEF
 struct NowPlayingCard: View {
     let track: SongInfo?
     let isPlaying: Bool
+    let trackPosition: Int64
+    let trackDuration: Int
     @Binding var volume: Int
     @Binding var isMuted: Bool
     @Binding var isDragging: Bool
@@ -13,6 +15,7 @@ struct NowPlayingCard: View {
     let onVolumeChange: (Int) -> Void
     let onMuteToggle: () -> Void
     let onAdjust: (Int) -> Void
+    let onSeek: (Int64) -> Void
     
     var body: some View {
         VStack(spacing: 20) {
@@ -58,28 +61,35 @@ struct NowPlayingCard: View {
                 }
             }
             
-            // Volume control
-            VStack(spacing: 12) {
-                HStack {
-                    Text("\(volume)%")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(isDragging ? .accentColor : .secondary)
-                    Spacer()
-                    Button(action: onMuteToggle) {
-                        Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.fill")
-                            .font(.system(size: 14))
-                            .foregroundColor(isMuted ? .accentColor : .secondary)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-                
-                ModernSlider(
-                    value: Binding(
-                        get: { Double(volume) },
-                        set: { onVolumeChange(Int($0)) }
-                    ),
-                    isDragging: $isDragging
+            // Progress indicator
+            if trackDuration > 0 {
+                TrackProgressView(
+                    position: trackPosition,
+                    duration: trackDuration,
+                    onSeek: onSeek
                 )
+            } else {
+                // Show placeholder when no duration info
+                VStack(spacing: 4) {
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            Capsule()
+                                .fill(Color(NSColor.separatorColor).opacity(0.2))
+                                .frame(height: 4)
+                        }
+                    }
+                    .frame(height: 12)
+                    
+                    HStack {
+                        Text("--:--")
+                            .font(.system(size: 11, design: .monospaced))
+                            .foregroundColor(.secondary.opacity(0.5))
+                        Spacer()
+                        Text("--:--")
+                            .font(.system(size: 11, design: .monospaced))
+                            .foregroundColor(.secondary.opacity(0.5))
+                    }
+                }
             }
             
             // Playback controls
@@ -93,8 +103,61 @@ struct NowPlayingCard: View {
                 PlayButton(icon: "forward.fill", size: .small, action: onNext)
             }
             .frame(maxWidth: .infinity)
+            // Volume control
+            HStack(spacing: 12) {
+                Image(systemName: "speaker.fill" )
+                    .font(.system(size: 14))
+                
+                ModernSlider(
+                    value: Binding(
+                        get: { Double(volume) },
+                        set: { onVolumeChange(Int($0)) }
+                    ),
+                    isDragging: $isDragging
+                )
+                Button(action: onMuteToggle) {
+                    Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.3.fill")
+                        .font(.system(size: 14))
+                        .foregroundColor(isMuted ? .accentColor : .secondary)
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
         }
         .padding(20)
         .background(Color(NSColor.controlBackgroundColor))
     }
+}
+
+#Preview {
+    @State var volume = 50
+    @State var isMuted = false
+    @State var isDragging = false
+    
+    let sampleTrack = SongInfo(
+        title: "Bohemian Rhapsody",
+        artist: "Queen",
+        album: "A Night at the Opera",
+        coverURL: nil
+    )
+    
+    return NowPlayingCard(
+        track: sampleTrack,
+        isPlaying: true,
+        trackPosition: 90000, // 1:30
+        trackDuration: 240000, // 4:00
+        volume: $volume,
+        isMuted: $isMuted,
+        isDragging: $isDragging,
+        onPrevious: {},
+        onPlayPause: {},
+        onNext: {},
+        onVolumeChange: { _ in },
+        onMuteToggle: {},
+        onAdjust: { _ in },
+        onSeek: { position in
+            print("Seeking to: \(position)ms")
+        }
+    )
+    .frame(width: 320)
+    .padding()
 }
