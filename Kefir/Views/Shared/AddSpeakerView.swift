@@ -51,7 +51,6 @@ struct AddSpeakerView: View {
     
     private var discoveryView: some View {
         VStack(spacing: 16) {
-            Spacer()
             
             // Animated network icon with wave effects
             ZStack {
@@ -111,14 +110,13 @@ struct AddSpeakerView: View {
                     .opacity(0.7)
             }
             
-            Spacer()
-            
             Button("Enter Manually") {
                 isDiscovering = false
                 showManualEntry = true
             }
             .buttonStyle(.plain)
             .foregroundColor(.secondary)
+            .focusable(false)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -138,6 +136,7 @@ struct AddSpeakerView: View {
                     .buttonStyle(.plain)
                     .font(.caption)
                     .foregroundColor(.secondary)
+                    .focusable(false)
                 }
                 
                 ScrollView {
