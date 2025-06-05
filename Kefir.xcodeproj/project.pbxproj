@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA2F09FD2DF126DC00D227F2 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = FA2F09FC2DF126DC00D227F2 /* README.md */; };
+		FA2F0A042DF1B89D00D227F2 /* SwiftKEF in Frameworks */ = {isa = PBXBuildFile; productRef = FA2F0A032DF1B89D00D227F2 /* SwiftKEF */; };
 		FAEFECBE2DF099F400326F2B /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFECBD2DF099F400326F2B /* KeyboardShortcuts */; };
-		FAEFECC12DF09A0D00326F2B /* SwiftKEF in Frameworks */ = {isa = PBXBuildFile; productRef = FAEFECC02DF09A0D00326F2B /* SwiftKEF */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +33,7 @@
 		FA0C11602DEFC83A00D583EA /* Kefir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kefir.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0C116E2DEFC83B00D583EA /* KefirTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KefirTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0C11782DEFC83B00D583EA /* KefirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KefirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA2F09FC2DF126DC00D227F2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -58,7 +60,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAEFECBE2DF099F400326F2B /* KeyboardShortcuts in Frameworks */,
-				FAEFECC12DF09A0D00326F2B /* SwiftKEF in Frameworks */,
+				FA2F0A042DF1B89D00D227F2 /* SwiftKEF in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +84,7 @@
 		FA0C11572DEFC83A00D583EA = {
 			isa = PBXGroup;
 			children = (
+				FA2F09FC2DF126DC00D227F2 /* README.md */,
 				FA0C11622DEFC83A00D583EA /* Kefir */,
 				FA0C11712DEFC83B00D583EA /* KefirTests */,
 				FA0C117B2DEFC83B00D583EA /* KefirUITests */,
@@ -120,7 +123,7 @@
 			name = Kefir;
 			packageProductDependencies = (
 				FAEFECBD2DF099F400326F2B /* KeyboardShortcuts */,
-				FAEFECC02DF09A0D00326F2B /* SwiftKEF */,
+				FA2F0A032DF1B89D00D227F2 /* SwiftKEF */,
 			);
 			productName = Kefir;
 			productReference = FA0C11602DEFC83A00D583EA /* Kefir.app */;
@@ -206,7 +209,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				FAEFECBC2DF099F400326F2B /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
-				FAEFECBF2DF09A0D00326F2B /* XCRemoteSwiftPackageReference "SwiftKEF" */,
+				FA2F0A022DF1B89D00D227F2 /* XCRemoteSwiftPackageReference "SwiftKEF" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FA0C11612DEFC83A00D583EA /* Products */;
@@ -225,6 +228,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA2F09FD2DF126DC00D227F2 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -566,6 +570,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		FA2F0A022DF1B89D00D227F2 /* XCRemoteSwiftPackageReference "SwiftKEF" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = /Users/alex/Developer/GitHub/kef/SwiftKEF;
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		FAEFECBC2DF099F400326F2B /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
@@ -574,26 +586,18 @@
 				minimumVersion = 2.3.0;
 			};
 		};
-		FAEFECBF2DF09A0D00326F2B /* XCRemoteSwiftPackageReference "SwiftKEF" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/melonamin/SwiftKEF";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		FA2F0A032DF1B89D00D227F2 /* SwiftKEF */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FA2F0A022DF1B89D00D227F2 /* XCRemoteSwiftPackageReference "SwiftKEF" */;
+			productName = SwiftKEF;
+		};
 		FAEFECBD2DF099F400326F2B /* KeyboardShortcuts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FAEFECBC2DF099F400326F2B /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
 			productName = KeyboardShortcuts;
-		};
-		FAEFECC02DF09A0D00326F2B /* SwiftKEF */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = FAEFECBF2DF09A0D00326F2B /* XCRemoteSwiftPackageReference "SwiftKEF" */;
-			productName = SwiftKEF;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
