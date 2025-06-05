@@ -66,6 +66,7 @@ struct NowPlayingCard: View {
                 TrackProgressView(
                     position: trackPosition,
                     duration: trackDuration,
+                    isPlaying: isPlaying,
                     onSeek: onSeek
                 )
             } else {

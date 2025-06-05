@@ -3,13 +3,18 @@ import SwiftUI
 struct TrackProgressView: View {
     let position: Int64
     let duration: Int
+    let isPlaying: Bool
     let onSeek: (Int64) -> Void
+    
+    @State private var displayPosition: Int64 = 0
+    @State private var lastUpdateTime = Date()
+    @State private var timer: Timer?
     
     // Note: KEF speakers don't support seeking, so this is display-only
     
     private var progress: Double {
         guard duration > 0 else { return 0 }
-        return Double(position) / Double(duration)
+        return Double(displayPosition) / Double(duration)
     }
     
     var body: some View {
@@ -26,6 +31,7 @@ struct TrackProgressView: View {
                     Capsule()
                         .fill(Color.accentColor.opacity(0.8))
                         .frame(width: geometry.size.width * CGFloat(progress), height: 4)
+                        .animation(.linear(duration: 0.1), value: progress)
                 }
                 // Add a subtle overlay to indicate non-interactive
                 .allowsHitTesting(false) // Explicitly disable interaction
@@ -34,7 +40,7 @@ struct TrackProgressView: View {
             
             // Time labels
             HStack {
-                Text(formatTime(Int(position)))
+                Text(formatTime(Int(displayPosition)))
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
                 
@@ -45,6 +51,44 @@ struct TrackProgressView: View {
                     .foregroundColor(.secondary)
             }
         }
+        .onAppear {
+            displayPosition = position
+            startTimer()
+        }
+        .onDisappear {
+            stopTimer()
+        }
+        .onChange(of: position) { oldValue, newValue in
+            // Update display position when we get a new position from the speaker
+            displayPosition = newValue
+            lastUpdateTime = Date()
+        }
+        .onChange(of: isPlaying) { oldValue, newValue in
+            // Reset timer when play state changes
+            if newValue {
+                lastUpdateTime = Date()
+                startTimer()
+            }
+        }
+    }
+    
+    private func startTimer() {
+        stopTimer()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            // Only update if playing and not at the end
+            if isPlaying && displayPosition < Int64(duration) {
+                // Calculate elapsed time since last update
+                let elapsed = Date().timeIntervalSince(lastUpdateTime)
+                // Add elapsed time in milliseconds
+                displayPosition = min(displayPosition + Int64(elapsed * 1000), Int64(duration))
+                lastUpdateTime = Date()
+            }
+        }
+    }
+    
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
     }
     
     private func formatTime(_ milliseconds: Int) -> String {
@@ -63,6 +107,7 @@ struct TrackProgressView: View {
         TrackProgressView(
             position: 90000, // 1:30
             duration: 240000, // 4:00
+            isPlaying: true,
             onSeek: { _ in 
                 print("Seeking not supported")
             }
@@ -71,12 +116,14 @@ struct TrackProgressView: View {
         TrackProgressView(
             position: 0,
             duration: 180000, // 3:00
+            isPlaying: false,
             onSeek: { _ in }
         )
         
         TrackProgressView(
             position: 180000, // 3:00
             duration: 180000, // 3:00
+            isPlaying: false,
             onSeek: { _ in }
         )
         

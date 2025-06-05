@@ -38,6 +38,7 @@ enum Constants {
         /// Mini player dimensions
         static let miniPlayerWidth = 280
         static let miniPlayerHeight = 74
+        static let miniPlayerHeightWithProgress = 82
         
         /// Settings window dimensions
         static let settingsWidth = 600
