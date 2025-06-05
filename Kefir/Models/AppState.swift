@@ -2,6 +2,7 @@ import Foundation
 import SwiftKEF
 import KeyboardShortcuts
 import AppKit
+import Combine
 
 /// Main application state that coordinates between specialized managers
 @MainActor
@@ -31,6 +32,7 @@ class AppState: ObservableObject {
     
     // MARK: - Private Properties
     private var pollingTask: Task<Void, Never>?
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
     init() {
@@ -40,6 +42,31 @@ class AppState: ObservableObject {
         self.source = SourceManager()
         self.error = ErrorManager()
         self.config = ConfigurationManager()
+        
+        // Subscribe to manager changes to trigger UI updates
+        connection.objectWillChange
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+            
+        volume.objectWillChange
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+        
+        playback.objectWillChange
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+        
+        source.objectWillChange
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
         
         Task {
             await loadConfiguration()

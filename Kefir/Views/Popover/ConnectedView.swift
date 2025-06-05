@@ -16,7 +16,9 @@ struct ConnectedView: View {
                 trackDuration: appState.trackDuration,
                 volume: Binding(
                     get: { appState.currentVolume },
-                    set: { _ in }
+                    set: { newValue in
+                        Task { await appState.setVolume(newValue) }
+                    }
                 ),
                 isMuted: Binding(
                     get: { appState.isMuted },
@@ -44,7 +46,9 @@ struct ConnectedView: View {
             VolumeCard(
                 volume: Binding(
                     get: { appState.currentVolume },
-                    set: { _ in }
+                    set: { newValue in
+                        Task { await appState.setVolume(newValue) }
+                    }
                 ),
                 isMuted: Binding(
                     get: { appState.isMuted },

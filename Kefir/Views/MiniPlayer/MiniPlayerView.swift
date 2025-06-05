@@ -105,7 +105,9 @@ struct MiniPlayerView: View {
                             MiniVolumeControl(
                                 volume: Binding(
                                     get: { appState.currentVolume },
-                                    set: { _ in }
+                                    set: { newValue in
+                                        Task { await appState.setVolume(newValue) }
+                                    }
                                 ),
                                 isMuted: Binding(
                                     get: { appState.isMuted },
