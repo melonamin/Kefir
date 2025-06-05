@@ -4,264 +4,133 @@
 
 # Kefir - KEF Speaker Control for macOS
 
-A native macOS menubar application for controlling KEF wireless speakers (LSX II, LS50 Wireless II, LS60) with real-time updates and elegant interface.
+A beautiful menubar app that puts your KEF wireless speakers at your fingertips. Control volume, switch sources, and see what's playing - all without leaving your current task.
 
 ![macOS](https://img.shields.io/badge/macOS-13.0%2B-blue)
-![Swift](https://img.shields.io/badge/Swift-6.0-orange)
-![SwiftUI](https://img.shields.io/badge/SwiftUI-5.0-green)
-
-## Features
-
-### 🎵 Real-Time Control
-- **Live Status Updates** - Volume, source, and playback state sync automatically
-- **Now Playing Display** - Album art, track info, and progress for streaming sources
-- **Instant Response** - Changes reflect immediately in the interface
-
-### 🎛️ Complete Speaker Management
-- **Volume Control** - Draggable slider, +/- buttons, and mute toggle
-- **Source Switching** - Quick access to all input sources (Wi-Fi, Bluetooth, TV, Optical, etc.)
-- **Power Management** - Turn speakers on/off directly from the menubar
-- **Speaker Profiles** - Save multiple speakers and switch between them
-
-### 🎪 Mini Player
-- **Floating Window** - Compact controls that stay on top
-- **Hover Effects** - Reveals controls when you hover over track info
-- **Playback Controls** - Play/pause, previous/next for streaming sources
-- **Visual Feedback** - Animated sound waves for active playback
-
-### ⌨️ Global Shortcuts
-- **Volume Up/Down** - Adjust volume from anywhere
-- **Mute Toggle** - Quick mute/unmute
-- **Playback Control** - Play/pause, skip tracks globally
-
-### 🎨 Modern Interface
-- **Native macOS Design** - Follows system appearance (light/dark mode)
-- **Visual Effects** - Translucent backgrounds and smooth animations
-- **Accessibility** - Full VoiceOver support and keyboard navigation
 
 ## Screenshots
 
 ![Kefir Screenshot](Resources/promo.jpeg)
 
-### Main Popover
-- Volume control with live updates
-- Now playing information with album art
-- Source selection buttons
-- Power controls
+## Features
 
-### Mini Player
-- Compact floating window
-- Hover-to-reveal controls
-- Real-time track information
+### 🎵 Real-Time Control
+- **Live Updates** - See volume changes and playback status instantly
+- **Now Playing** - Album art, track info, and progress bar for your music
+- **Smooth Animations** - Beautiful, responsive interface that feels native
 
-## Installation
+### 🎛️ Complete Speaker Control
+- **Volume Control** - Adjust with slider, buttons, or keyboard shortcuts
+- **Source Switching** - Quick access to Wi-Fi, Bluetooth, TV, Optical, and more
+- **Power Management** - Turn speakers on/off from your Mac
+- **Multiple Speakers** - Save and switch between different KEF speakers
+
+### 🎪 Mini Player
+- **Floating Window** - Keep controls visible while you work
+- **Smart Design** - Shows track info, hover for playback controls
+- **Draggable** - Position it anywhere on your screen
+
+### ⌨️ Global Shortcuts
+Set up keyboard shortcuts for:
+- Volume up/down
+- Mute/unmute
+- Play/pause
+- Skip tracks
+
+## Getting Started
 
 ### Requirements
 - macOS 13.0 or later
-- KEF wireless speakers on the same network
-- Network connectivity to speakers
+- KEF wireless speakers (LSX II, LS50 Wireless II, or LS60)
+- Speakers and Mac on the same network
 
-### Building from Source
+### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/kef.git
-   cd kef/Kefir
-   ```
+1. Download the latest release from the [Releases](https://github.com/melonamin/Kefir/releases) page
+2. Drag Kefir to your Applications folder
+3. Launch Kefir from Applications
 
-2. **Open in Xcode**
-   ```bash
-   open Kefir.xcodeproj
-   ```
+### First Time Setup
 
-3. **Build and run**
-   - Select the Kefir scheme
-   - Press Cmd+R to build and run
+1. **Launch Kefir** - Look for the speaker icon in your menubar
+2. **Add Your Speaker**:
+   - Click the menubar icon → Settings
+   - Click "Add Speaker"
+   - Enter a name (e.g., "Living Room")
+   - Enter your speaker's IP address
+3. **Optional**: Set up keyboard shortcuts in Settings
 
-### Dependencies
-- [SwiftKEF](https://github.com/melonamin/SwiftKEF) - KEF speaker control library
-- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) - Global keyboard shortcuts
+### Finding Your Speaker's IP Address
 
-## Setup
+- Check your router's connected devices list
+- Use the KEF Connect app on your phone
+- Look in your speaker's network settings
 
-### First Launch
-1. Launch Kefir.app
-2. Grant accessibility permissions for global shortcuts (optional)
-3. Click the menubar icon and select "Settings"
-4. Add your first speaker with its IP address
-
-### Adding Speakers
-1. Find your speaker's IP address (check your router or KEF app)
-2. Click the menubar icon → Settings → Add Speaker
-3. Enter a friendly name and IP address
-4. The first speaker is automatically set as default
-
-### Configuring Shortcuts
-1. Go to Settings → Keyboard Shortcuts
-2. Set your preferred key combinations
-3. Common shortcuts:
-   - Volume Up: `Option + Up Arrow`
-   - Volume Down: `Option + Down Arrow`
-   - Mute: `Option + M`
-   - Play/Pause: `Option + Space`
-
-## Usage
+## How to Use
 
 ### Basic Controls
-- **Volume**: Drag the slider or use +/- buttons
-- **Mute**: Click the speaker icon or use the keyboard shortcut
-- **Power**: Toggle speaker power from the menubar
-- **Source**: Click source buttons to switch inputs
+- **Click the menubar icon** to open controls
+- **Adjust volume** with the slider or +/- buttons
+- **Switch sources** by clicking the source buttons
+- **Toggle power** with the power button
 
-### Streaming Playback
-When using Wi-Fi or Bluetooth sources:
-- Track information appears automatically
-- Use playback controls (previous/play/pause/next)
-- Progress bar shows current position
-- Album art displays when available
+### Playing Music
+When streaming via Wi-Fi or Bluetooth:
+- See current track with album art
+- Control playback (play/pause, skip)
+- Watch real-time progress
+- All controls update live
 
 ### Mini Player
-- Access via menubar → "Show Mini Player"
-- Drag to reposition anywhere on screen
-- Hover to reveal controls
-- Close button appears on hover
+Perfect for keeping controls handy:
+- Open from menubar → "Show Mini Player"
+- Drag to position anywhere
+- Hover to reveal full controls
+- Shows current track and progress
 
-### Multiple Speakers
-- Switch between speakers in Settings
-- Each speaker remembers its last state
-- Set a default speaker for automatic connection
+### Keyboard Shortcuts
+Speed up your workflow:
+- Set custom shortcuts in Settings
+- Control volume without clicking
+- Play/pause from any app
+- No need to switch windows
 
-## Architecture
+## Tips & Tricks
 
-### MVVM Pattern
-```
-AppState (ViewModel)
-├── SpeakerConnectionManager
-├── VolumeManager
-├── SourceManager
-├── PlaybackStateManager
-├── ErrorManager
-└── ConfigurationManager
-```
-
-### Key Components
-
-#### Models
-- **AppState** - Central coordinator managing all app state
-- **VolumeManager** - Volume and mute state management
-- **SourceManager** - Input source handling with display names
-- **PlaybackStateManager** - Track info and playback state
-- **SpeakerConnectionManager** - Network communication with speakers
-- **ErrorManager** - Centralized error handling and user notifications
-- **ConfigurationManager** - Speaker profiles and settings persistence
-
-#### Views
-- **PopoverView** - Main interface with adaptive content
-- **ConnectedView** - Controls for active speakers
-- **NowPlayingCard** - Rich media controls for streaming
-- **VolumeCard** - Dedicated volume control interface
-- **MiniPlayerView** - Floating player window
-- **SettingsView** - Speaker management and preferences
-
-### Real-Time Updates
-- **Polling System** - Regular status checks with the speaker
-- **Event Streaming** - Async sequence of speaker events
-- **Combine Framework** - Reactive state propagation
-- **Manager Coordination** - Updates flow through specialized managers
-
-## Development
-
-### Project Structure
-```
-Kefir/
-├── KefirApp.swift              # App entry point
-├── Constants.swift             # App-wide constants
-├── Models/                     # Data models and business logic
-│   ├── AppState.swift          # Main app state coordinator
-│   ├── VolumeManager.swift     # Volume control logic
-│   ├── SourceManager.swift     # Source management
-│   ├── PlaybackStateManager.swift # Track and playback state
-│   ├── SpeakerConnectionManager.swift # Network communication
-│   ├── ErrorManager.swift      # Error handling
-│   └── ConfigurationManager.swift # Settings persistence
-├── Views/                      # SwiftUI interface components
-│   ├── Popover/               # Main popover interface
-│   ├── MiniPlayer/            # Floating player window
-│   ├── Settings/              # Configuration screens
-│   └── Shared/                # Reusable UI components
-└── Assets.xcassets/           # Images and colors
-```
-
-### Building and Testing
-
-#### Build Commands
-```bash
-# Debug build
-xcodebuild -scheme Kefir -configuration Debug build
-
-# Release build
-xcodebuild -scheme Kefir -configuration Release build
-
-# Run tests
-xcodebuild -scheme Kefir test
-```
-
-#### Code Style
-- Swift 6.0 with strict concurrency
-- SwiftUI for all interface components
-- Async/await for network operations
-- Actor isolation for thread safety
-- Comprehensive error handling
-
-### Contributing
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Follow** existing code patterns and architecture
-4. **Test** your changes thoroughly
-5. **Commit** with clear messages (`git commit -m 'Add amazing feature'`)
-6. **Push** to your branch (`git push origin feature/amazing-feature`)
-7. **Open** a Pull Request
-
-### Testing
-- Unit tests for all manager classes
-- SwiftUI preview providers for visual components
-- Integration tests with mock speaker connections
-- Manual testing with actual KEF speakers
+- **Default Speaker**: Set your most-used speaker as default for instant connection
+- **Mini Player**: Great for parties - keep controls visible while using other apps
+- **Shortcuts**: Try `Option + Arrow Keys` for volume control
+- **Multiple Speakers**: Each speaker remembers its last state
 
 ## Troubleshooting
 
-### Common Issues
+### Can't find your speaker?
+- Make sure speaker is powered on
+- Check both devices are on the same Wi-Fi network
+- Try restarting your speaker
+- Verify the IP address is correct
 
-**App doesn't detect speaker**
-- Verify speaker and Mac are on same network
-- Check speaker IP address in router settings
-- Try pinging the speaker: `ping [speaker-ip]`
+### Keyboard shortcuts not working?
+- Grant accessibility permissions when prompted
+- Check System Settings → Privacy & Security → Accessibility
+- Make sure Kefir is listed and enabled
+- Restart Kefir after granting permissions
 
-**Global shortcuts don't work**
-- Grant accessibility permissions in System Preferences
-- Check for conflicting shortcuts in other apps
-- Restart the app after granting permissions
+### Connection issues?
+- Check your network connection
+- Make sure no firewall is blocking the app
+- Try using a wired connection for your speaker
+- Restart both your Mac and speaker
 
-**Volume changes don't appear**
-- Check network connection to speaker
-- Verify speaker is powered on
-- Look for error messages in the interface
+## Support
 
-**Real-time updates are slow**
-- Check network latency to speaker
-- Reduce polling interval in settings (if available)
-- Restart the app to reset connections
+Having issues or suggestions? 
+- Report problems on our [GitHub Issues](https://github.com/melonamin/Kefir/issues) page
+- Check for updates regularly for new features and fixes
 
 ## License
 
 MIT License - see [LICENSE](../LICENSE) file for details.
-
-## Acknowledgments
-
-- KEF for creating excellent wireless speakers
-- SwiftKEF library for the networking foundation
-- Apple for SwiftUI and modern Swift features
 
 ---
 
