@@ -10,6 +10,7 @@ class PlaybackStateManager: ObservableObject {
     @Published var trackDuration: Int = 0 // in milliseconds
     
     /// Updates the playback state from a speaker event
+    @MainActor
     func updateFromEvent(_ event: KEFSpeakerEvent) {
         if let playbackState = event.playbackState {
             isPlaying = playbackState == .playing

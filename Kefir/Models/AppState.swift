@@ -21,14 +21,14 @@ class AppState: ObservableObject {
     let error: ErrorManager
     let config: ConfigurationManager
     
-    // MARK: - Computed Properties for compatibility
-    var currentVolume: Int { volume.currentVolume }
-    var isMuted: Bool { volume.isMuted }
-    var currentSource: KEFSource { source.currentSource }
-    var isPlaying: Bool { playback.isPlaying }
-    var currentTrack: SongInfo? { playback.currentTrack }
-    var trackPosition: Int64 { playback.trackPosition }
-    var trackDuration: Int { playback.trackDuration }
+    // MARK: - Published Properties for real-time updates
+    @Published var currentVolume: Int = 0
+    @Published var isMuted: Bool = false
+    @Published var currentSource: KEFSource = .wifi
+    @Published var isPlaying: Bool = false
+    @Published var currentTrack: SongInfo? = nil
+    @Published var trackPosition: Int64 = 0
+    @Published var trackDuration: Int = 0
     
     // MARK: - Private Properties
     private var pollingTask: Task<Void, Never>?
@@ -43,28 +43,46 @@ class AppState: ObservableObject {
         self.error = ErrorManager()
         self.config = ConfigurationManager()
         
-        // Subscribe to manager changes to trigger UI updates
-        connection.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
+        // Subscribe to manager property changes for real-time updates
+        volume.$currentVolume
+            .sink { [weak self] newValue in
+                self?.currentVolume = newValue
             }
             .store(in: &cancellables)
             
-        volume.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
+        volume.$isMuted
+            .sink { [weak self] newValue in
+                self?.isMuted = newValue
             }
             .store(in: &cancellables)
         
-        playback.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
+        playback.$isPlaying
+            .sink { [weak self] newValue in
+                self?.isPlaying = newValue
+            }
+            .store(in: &cancellables)
+            
+        playback.$currentTrack
+            .sink { [weak self] newValue in
+                self?.currentTrack = newValue
+            }
+            .store(in: &cancellables)
+            
+        playback.$trackPosition
+            .sink { [weak self] newValue in
+                self?.trackPosition = newValue
+            }
+            .store(in: &cancellables)
+            
+        playback.$trackDuration
+            .sink { [weak self] newValue in
+                self?.trackDuration = newValue
             }
             .store(in: &cancellables)
         
-        source.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
+        source.$currentSource
+            .sink { [weak self] newValue in
+                self?.currentSource = newValue
             }
             .store(in: &cancellables)
         
@@ -104,7 +122,10 @@ class AppState: ObservableObject {
             // Update initial status if connected
             if isConnected {
                 await updateStatus()
-                startPolling()
+                // Start polling after initial status update completes
+                Task {
+                    startPolling()
+                }
             }
         } catch {
             self.error.showConnectionError(error)
@@ -126,11 +147,20 @@ class AppState: ObservableObject {
                 
                 let playing = try await connection.isPlaying()
                 playback.isPlaying = playing
+                isPlaying = playing
                 
                 if playing {
                     await playback.updateTrackInfo(from: connection)
+                    // Update our local properties from playback manager
+                    currentTrack = playback.currentTrack
+                    trackPosition = playback.trackPosition
+                    trackDuration = playback.trackDuration
                 } else {
                     playback.reset()
+                    // Also reset our local properties
+                    currentTrack = nil
+                    trackPosition = 0
+                    trackDuration = 0
                 }
             }
         } catch {
@@ -172,9 +202,11 @@ class AppState: ObservableObject {
                     
                     // Update managers with event data
                     if powerStatus == .powerOn {
-                        volume.updateFromEvent(event)
-                        source.updateFromEvent(event)
-                        playback.updateFromEvent(event)
+                        await MainActor.run {
+                            volume.updateFromEvent(event)
+                            source.updateFromEvent(event)
+                            playback.updateFromEvent(event)
+                        }
                     }
                 }
             } catch {
@@ -228,7 +260,7 @@ class AppState: ObservableObject {
     func togglePlayPause() async {
         await error.performOperation(operation: "Toggle Playback") {
             try await connection.togglePlayPause()
-            playback.isPlaying.toggle()
+            isPlaying.toggle()
         }
     }
     

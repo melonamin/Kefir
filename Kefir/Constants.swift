@@ -5,7 +5,7 @@ enum Constants {
     /// Timing constants
     enum Timing {
         /// Default polling interval in seconds
-        static let defaultPollingInterval = 10
+        static let defaultPollingInterval = 1
         
         /// Connection retry delay in seconds
         static let connectionRetryDelay = 5.0

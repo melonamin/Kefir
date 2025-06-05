@@ -41,6 +41,8 @@ A native macOS menubar application for controlling KEF wireless speakers (LSX II
 
 ## Screenshots
 
+![Kefir Screenshot](Resources/promo.jpeg)
+
 ### Main Popover
 - Volume control with live updates
 - Now playing information with album art

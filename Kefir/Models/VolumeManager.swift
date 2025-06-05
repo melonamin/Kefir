@@ -12,6 +12,7 @@ class VolumeManager: ObservableObject {
     private let volumeStep = 5
     
     /// Updates volume from a speaker event
+    @MainActor
     func updateFromEvent(_ event: KEFSpeakerEvent) {
         if let volume = event.volume {
             currentVolume = volume

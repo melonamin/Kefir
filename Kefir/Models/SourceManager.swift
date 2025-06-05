@@ -18,6 +18,7 @@ class SourceManager: ObservableObject {
     ]
     
     /// Updates source from a speaker event
+    @MainActor
     func updateFromEvent(_ event: KEFSpeakerEvent) {
         if let source = event.source {
             currentSource = source
