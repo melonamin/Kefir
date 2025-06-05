@@ -55,6 +55,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover.contentViewController = NSHostingController(rootView: PopoverView(appState: appState, appDelegate: self))
         popover.behavior = .transient
         popover.animates = true
+        
+        // Monitor window notifications to handle settings window
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowWillClose),
+            name: NSWindow.willCloseNotification,
+            object: nil
+        )
+    }
+    
+    @objc func windowWillClose(_ notification: Notification) {
+        if let window = notification.object as? NSWindow,
+           window.title == "Settings" || window.title.contains("Preferences") {
+            // Return to accessory mode when settings window closes
+            DispatchQueue.main.async {
+                NSApp.setActivationPolicy(.accessory)
+            }
+        }
     }
     
     @MainActor @objc func togglePopover() {

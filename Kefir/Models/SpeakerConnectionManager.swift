@@ -21,8 +21,17 @@ class SpeakerConnectionManager: ObservableObject {
         // Clean up existing connection
         await disconnect()
         
-        // Create new connection
-        httpClient = HTTPClient(eventLoopGroupProvider: .singleton)
+        // Create new connection with timeout configuration
+        let configuration = HTTPClient.Configuration(
+            timeout: HTTPClient.Configuration.Timeout(
+                connect: .seconds(Int64(Constants.Timing.httpConnectTimeout)),
+                read: .seconds(Int64(Constants.Timing.httpReadTimeout))
+            )
+        )
+        httpClient = HTTPClient(
+            eventLoopGroupProvider: .singleton,
+            configuration: configuration
+        )
         speaker = KEFSpeaker(host: profile.host, httpClient: httpClient!)
         
         // Test connection
@@ -44,7 +53,12 @@ class SpeakerConnectionManager: ObservableObject {
         speaker = nil
         
         if let client = httpClient {
-            try? await client.shutdown()
+            do {
+                try await client.shutdown()
+            } catch {
+                // Ignore shutdown errors as disconnect should be infallible
+                // This can happen if the client was already shutdown
+            }
             httpClient = nil
         }
         

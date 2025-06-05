@@ -263,6 +263,19 @@ struct AddSpeakerView: View {
         }
     }
     
+    private func createHTTPClient() -> HTTPClient {
+        let configuration = HTTPClient.Configuration(
+            timeout: HTTPClient.Configuration.Timeout(
+                connect: .seconds(Int64(Constants.Timing.httpConnectTimeout)),
+                read: .seconds(Int64(Constants.Timing.httpReadTimeout))
+            )
+        )
+        return HTTPClient(
+            eventLoopGroupProvider: .singleton,
+            configuration: configuration
+        )
+    }
+    
     private func discoverSpeakers() async {
         isDiscovering = true
         discoveryFailed = false
@@ -270,18 +283,19 @@ struct AddSpeakerView: View {
         discoveredSpeakers = []
         selectedDiscoveredSpeaker = nil
         
+        let httpClient = createHTTPClient()
+        
         do {
-            let httpClient = HTTPClient(eventLoopGroupProvider: .singleton)
-            defer {
-                Task {
-                    try? await httpClient.shutdown()
-                }
-            }
+            // Check if task was cancelled before starting
+            try Task.checkCancellation()
             
             let speakers = try await KEFSpeaker.discover(
                 httpClient: httpClient,
                 timeout: 10.0
             )
+            
+            // Check if task was cancelled after discovery
+            try Task.checkCancellation()
             
             discoveredSpeakers = speakers
             
@@ -293,9 +307,24 @@ struct AddSpeakerView: View {
                 speakerName = speakers.first?.name ?? ""
                 speakerHost = speakers.first?.host ?? ""
             }
+        } catch is CancellationError {
+            // Task was cancelled, clean up and return
+            do {
+                try await httpClient.shutdown()
+            } catch {
+                // Ignore shutdown errors
+            }
+            return
         } catch {
             discoveryFailed = true
             errorMessage = "Discovery failed: \(error.localizedDescription)"
+        }
+        
+        // Always shutdown the client
+        do {
+            try await httpClient.shutdown()
+        } catch {
+            // Ignore shutdown errors
         }
         
         isDiscovering = false
@@ -307,12 +336,14 @@ struct AddSpeakerView: View {
         isLoading = true
         errorMessage = nil
         
+        let httpClient = createHTTPClient()
+        
         do {
             // Test connection first
-            let httpClient = HTTPClient(eventLoopGroupProvider: .singleton)
             let kefSpeaker = KEFSpeaker(host: speaker.host, httpClient: httpClient)
-            
             _ = try await kefSpeaker.getStatus()
+            
+            // Shutdown the test client
             try await httpClient.shutdown()
             
             // Add to configuration
@@ -324,8 +355,27 @@ struct AddSpeakerView: View {
             }
             
             dismiss()
+        } catch let error as HTTPClientError where error == .alreadyShutdown {
+            // Client already shutdown, continue with adding speaker
+            do {
+                try await appState.addSpeaker(name: speaker.name, host: speaker.host)
+                
+                if let newSpeaker = appState.speakers.first(where: { $0.name == speaker.name }) {
+                    await appState.selectSpeaker(newSpeaker)
+                }
+                
+                dismiss()
+            } catch {
+                errorMessage = "Failed to add speaker: \(error.localizedDescription)"
+            }
         } catch {
             errorMessage = "Failed to add speaker: \(error.localizedDescription)"
+            // Try to shutdown if not already done
+            do {
+                try await httpClient.shutdown()
+            } catch {
+                // Ignore shutdown errors
+            }
         }
         
         isLoading = false
@@ -335,16 +385,22 @@ struct AddSpeakerView: View {
         isLoading = true
         errorMessage = nil
         
+        let httpClient = createHTTPClient()
+        
         do {
-            let httpClient = HTTPClient(eventLoopGroupProvider: .singleton)
             let speaker = KEFSpeaker(host: speakerHost, httpClient: httpClient)
-            
             _ = try await speaker.getStatus()
             errorMessage = nil
             
             try await httpClient.shutdown()
         } catch {
             errorMessage = "Failed to connect: \(error.localizedDescription)"
+            // Try to shutdown if not already done
+            do {
+                try await httpClient.shutdown()
+            } catch {
+                // Ignore shutdown errors
+            }
         }
         
         isLoading = false
@@ -354,12 +410,14 @@ struct AddSpeakerView: View {
         isLoading = true
         errorMessage = nil
         
+        let httpClient = createHTTPClient()
+        
         do {
             // Test connection first
-            let httpClient = HTTPClient(eventLoopGroupProvider: .singleton)
             let speaker = KEFSpeaker(host: speakerHost, httpClient: httpClient)
-            
             _ = try await speaker.getStatus()
+            
+            // Shutdown the test client
             try await httpClient.shutdown()
             
             // Add to configuration
@@ -371,8 +429,27 @@ struct AddSpeakerView: View {
             }
             
             dismiss()
+        } catch let error as HTTPClientError where error == .alreadyShutdown {
+            // Client already shutdown, continue with adding speaker
+            do {
+                try await appState.addSpeaker(name: speakerName, host: speakerHost)
+                
+                if let newSpeaker = appState.speakers.first(where: { $0.name == speakerName }) {
+                    await appState.selectSpeaker(newSpeaker)
+                }
+                
+                dismiss()
+            } catch {
+                errorMessage = "Failed to add speaker: \(error.localizedDescription)"
+            }
         } catch {
             errorMessage = "Failed to add speaker: \(error.localizedDescription)"
+            // Try to shutdown if not already done
+            do {
+                try await httpClient.shutdown()
+            } catch {
+                // Ignore shutdown errors
+            }
         }
         
         isLoading = false

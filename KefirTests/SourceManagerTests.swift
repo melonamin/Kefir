@@ -75,7 +75,7 @@ final class SourceManagerTests: XCTestCase {
         XCTAssertEqual(manager.symbolName(for: .bluetooth), "dot.radiowaves.left.and.right")
         XCTAssertEqual(manager.symbolName(for: .tv), "tv")
         XCTAssertEqual(manager.symbolName(for: .optic), "fibrechannel")
-        XCTAssertEqual(manager.symbolName(for: .coaxial), "cable.coaxial")
+        XCTAssertEqual(manager.symbolName(for: .coaxial), "cable.connector")
         XCTAssertEqual(manager.symbolName(for: .analog), "cable.connector.horizontal")
         XCTAssertEqual(manager.symbolName(for: .usb), "cable.connector")
     }

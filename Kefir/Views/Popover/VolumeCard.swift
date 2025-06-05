@@ -59,19 +59,3 @@ struct VolumeCard: View {
         .cornerRadius(12)
     }
 }
-
-#Preview {
-    @State var volume = 50
-    @State var isMuted = false
-    @State var isDragging = false
-    
-    return VolumeCard(
-        volume: $volume,
-        isMuted: $isMuted,
-        isDragging: $isDragging,
-        onVolumeChange: { _ in },
-        onMuteToggle: { },
-        onAdjust: { _ in }
-    )
-    .frame(width: 360)
-}

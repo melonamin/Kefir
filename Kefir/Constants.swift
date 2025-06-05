@@ -15,6 +15,12 @@ enum Constants {
         
         /// Animation duration for UI transitions
         static let animationDuration = 0.2
+        
+        /// HTTP connection timeout in seconds
+        static let httpConnectTimeout = 5.0
+        
+        /// HTTP read timeout in seconds
+        static let httpReadTimeout = 10.0
     }
     
     /// Volume constants
@@ -53,7 +59,7 @@ enum Constants {
     
     /// App metadata
     enum App {
-        static let name = "Kefir Menubar"
+        static let name = "Kefir"
         static let version: String = {
             Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
         }()

@@ -128,37 +128,3 @@ struct NowPlayingCard: View {
         .background(Color(NSColor.controlBackgroundColor))
     }
 }
-
-#Preview {
-    @State var volume = 50
-    @State var isMuted = false
-    @State var isDragging = false
-    
-    let sampleTrack = SongInfo(
-        title: "Bohemian Rhapsody",
-        artist: "Queen",
-        album: "A Night at the Opera",
-        coverURL: nil
-    )
-    
-    return NowPlayingCard(
-        track: sampleTrack,
-        isPlaying: true,
-        trackPosition: 90000, // 1:30
-        trackDuration: 240000, // 4:00
-        volume: $volume,
-        isMuted: $isMuted,
-        isDragging: $isDragging,
-        onPrevious: {},
-        onPlayPause: {},
-        onNext: {},
-        onVolumeChange: { _ in },
-        onMuteToggle: {},
-        onAdjust: { _ in },
-        onSeek: { position in
-            print("Seeking to: \(position)ms")
-        }
-    )
-    .frame(width: 320)
-    .padding()
-}

@@ -17,20 +17,17 @@ struct MiniPlayerView: View {
                 ZStack {
                     // Default view - Track info
                     HStack(spacing: 12) {
-                        // Album art or speaker icon
+                        // Album art or app icon
                         ZStack {
                             if let coverURL = appState.currentTrack?.coverURL {
                                 AlbumArtView(coverURL: coverURL)
                                     .frame(width: 50, height: 50)
                             } else {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.accentColor.opacity(0.2))
+                                Image(nsImage: NSApp.applicationIconImage!)
+                                    .resizable()
+                                    .scaledToFit()
                                     .frame(width: 50, height: 50)
-                                    .overlay(
-                                        Image(systemName: "hifispeaker.fill")
-                                            .font(.system(size: 24))
-                                            .foregroundColor(.accentColor)
-                                    )
+                                    .cornerRadius(8)
                             }
                         }
                         

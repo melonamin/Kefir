@@ -215,19 +215,10 @@ struct AboutTab: View {
         VStack(spacing: 0) {
             // App Icon and Version
             VStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(LinearGradient(
-                            colors: [Color.accentColor, Color.accentColor.opacity(0.8)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ))
-                        .frame(width: 80, height: 80)
-                    
-                    Image(systemName: "hifispeaker.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.white)
-                }
+                Image(nsImage: NSApp.applicationIconImage!)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
                 
                 VStack(spacing: 4) {
                     Text(Constants.App.name)

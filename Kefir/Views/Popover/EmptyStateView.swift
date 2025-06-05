@@ -46,10 +46,3 @@ struct EmptyStateView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
-
-#Preview {
-    @State var showingAddSpeaker = false
-    
-    return EmptyStateView(showingAddSpeaker: $showingAddSpeaker)
-        .frame(width: 360, height: 420)
-}
