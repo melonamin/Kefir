@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftKEF
 
 struct SourceButton: View {
+    @ObservedObject var appState: AppState
     let source: KEFSource
     let isSelected: Bool
     let action: () -> Void
@@ -13,7 +14,7 @@ struct SourceButton: View {
                     .font(.system(size: 20))
                     .foregroundColor(isSelected ? .white : .primary)
                 
-                Text(source.displayName)
+                Text(appState.source.displayName(for: source))
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(isSelected ? .white : .primary)
             }
@@ -33,23 +34,16 @@ struct SourceButton: View {
     }
     
     private var sourceIcon: String {
-        switch source {
-        case .wifi: return "wifi"
-        case .bluetooth: return "dot.radiowaves.left.and.right"
-        case .tv: return "tv"
-        case .optic: return "fibrechannel"
-        case .coaxial: return "cable.connector"
-        case .analog: return "cable.connector.horizontal"
-        case .usb: return "cable.connector"
-        }
+        appState.source.symbolName(for: source)
     }
 }
 
 #Preview {
-    HStack(spacing: 10) {
-        SourceButton(source: .wifi, isSelected: true, action: {})
-        SourceButton(source: .bluetooth, isSelected: false, action: {})
-        SourceButton(source: .tv, isSelected: false, action: {})
+    let appState = AppState()
+    return HStack(spacing: 10) {
+        SourceButton(appState: appState, source: .wifi, isSelected: true, action: {})
+        SourceButton(appState: appState, source: .bluetooth, isSelected: false, action: {})
+        SourceButton(appState: appState, source: .tv, isSelected: false, action: {})
     }
     .padding()
 }

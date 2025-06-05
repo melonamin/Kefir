@@ -226,9 +226,9 @@ enum ConfigurationError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .speakerNotFound:
-            return "Speaker not found in configuration"
+            return NSLocalizedString("Speaker not found in configuration", comment: "Error when speaker is not found")
         case .speakerAlreadyExists(let name):
-            return "A speaker named '\(name)' already exists"
+            return String(format: NSLocalizedString("A speaker named '%@' already exists", comment: "Error when speaker name already exists"), name)
         }
     }
 }

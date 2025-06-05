@@ -11,7 +11,7 @@ final class SourceManagerTests: XCTestCase {
     }
     
     func testAvailableSources() {
-        let expected: [KEFSource] = [.wifi, .bluetooth, .tv, .optical, .coaxial, .analog, .usb]
+        let expected: [KEFSource] = [.wifi, .bluetooth, .tv, .optic, .coaxial, .analog, .usb]
         XCTAssertEqual(SourceManager.availableSources, expected)
     }
     
@@ -39,10 +39,10 @@ final class SourceManagerTests: XCTestCase {
         let manager = SourceManager()
         let mockConnection = MockSpeakerConnectionForSource()
         
-        try await manager.setSource(.optical, using: mockConnection)
+        try await manager.setSource(.optic, using: mockConnection)
         
-        XCTAssertEqual(manager.currentSource, .optical)
-        XCTAssertEqual(mockConnection.lastSetSource, .optical)
+        XCTAssertEqual(manager.currentSource, .optic)
+        XCTAssertEqual(mockConnection.lastSetSource, .optic)
     }
     
     func testUpdateFromSpeaker() async throws {
@@ -59,11 +59,10 @@ final class SourceManagerTests: XCTestCase {
     func testDisplayNames() {
         let manager = SourceManager()
         
-        XCTAssertEqual(manager.displayName(for: .standby), "Standby")
         XCTAssertEqual(manager.displayName(for: .wifi), "Wi-Fi")
         XCTAssertEqual(manager.displayName(for: .bluetooth), "Bluetooth")
         XCTAssertEqual(manager.displayName(for: .tv), "TV/ARC")
-        XCTAssertEqual(manager.displayName(for: .optical), "Optical")
+        XCTAssertEqual(manager.displayName(for: .optic), "Optical")
         XCTAssertEqual(manager.displayName(for: .coaxial), "Coaxial")
         XCTAssertEqual(manager.displayName(for: .analog), "Analog")
         XCTAssertEqual(manager.displayName(for: .usb), "USB")
@@ -72,14 +71,13 @@ final class SourceManagerTests: XCTestCase {
     func testSymbolNames() {
         let manager = SourceManager()
         
-        XCTAssertEqual(manager.symbolName(for: .standby), "power")
         XCTAssertEqual(manager.symbolName(for: .wifi), "wifi")
-        XCTAssertEqual(manager.symbolName(for: .bluetooth), "bluetooth")
+        XCTAssertEqual(manager.symbolName(for: .bluetooth), "dot.radiowaves.left.and.right")
         XCTAssertEqual(manager.symbolName(for: .tv), "tv")
-        XCTAssertEqual(manager.symbolName(for: .optical), "fibrechannel")
+        XCTAssertEqual(manager.symbolName(for: .optic), "fibrechannel")
         XCTAssertEqual(manager.symbolName(for: .coaxial), "cable.coaxial")
-        XCTAssertEqual(manager.symbolName(for: .analog), "cable.connector")
-        XCTAssertEqual(manager.symbolName(for: .usb), "usb.port")
+        XCTAssertEqual(manager.symbolName(for: .analog), "cable.connector.horizontal")
+        XCTAssertEqual(manager.symbolName(for: .usb), "cable.connector")
     }
 }
 

@@ -284,16 +284,18 @@ class AppState: ObservableObject {
     private func setupKeyboardShortcuts() async {
         KeyboardShortcuts.onKeyUp(for: .volumeUp) { [weak self] in
             Task { @MainActor in
-                await self?.error.performOperation(operation: "Volume Up") {
-                    try await self?.volume.increaseVolume(using: self!.connection)
+                guard let self = self else { return }
+                await self.error.performOperation(operation: "Volume Up") {
+                    try await self.volume.increaseVolume(using: self.connection)
                 }
             }
         }
         
         KeyboardShortcuts.onKeyUp(for: .volumeDown) { [weak self] in
             Task { @MainActor in
-                await self?.error.performOperation(operation: "Volume Down") {
-                    try await self?.volume.decreaseVolume(using: self!.connection)
+                guard let self = self else { return }
+                await self.error.performOperation(operation: "Volume Down") {
+                    try await self.volume.decreaseVolume(using: self.connection)
                 }
             }
         }

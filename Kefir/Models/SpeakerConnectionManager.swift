@@ -163,11 +163,11 @@ enum SpeakerError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notConnected:
-            return "No speaker connected"
+            return NSLocalizedString("No speaker connected", comment: "Error when no speaker is connected")
         case .connectionFailed(let message):
-            return "Connection failed: \(message)"
+            return String(format: NSLocalizedString("Connection failed: %@", comment: "Error when connection to speaker fails"), message)
         case .operationFailed(let message):
-            return "Operation failed: \(message)"
+            return String(format: NSLocalizedString("Operation failed: %@", comment: "Error when speaker operation fails"), message)
         }
     }
 }

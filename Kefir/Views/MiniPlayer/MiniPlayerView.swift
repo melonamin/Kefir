@@ -51,7 +51,7 @@ struct MiniPlayerView: View {
                             } else {
                                 Text(appState.currentSpeaker?.name ?? "KEF Speaker")
                                     .font(.system(size: 13, weight: .medium))
-                                Text(appState.currentSource.displayName)
+                                Text(appState.source.displayName(for: appState.currentSource))
                                     .font(.system(size: 11))
                                     .foregroundColor(.secondary)
                             }

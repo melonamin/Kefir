@@ -77,13 +77,13 @@ struct BottomBar: View {
                     .focusable(false)
                     
                     Menu {
-                        ForEach(KEFSource.allCases, id: \.self) { source in
+                        ForEach(SourceManager.availableSources, id: \.self) { source in
                             Button(action: {
                                 Task { await appState.setSource(source) }
                             }) {
                                 HStack {
-                                    Image(systemName: sourceIcon(for: source))
-                                    Text(source.displayName)
+                                    Image(systemName: appState.source.symbolName(for: source))
+                                    Text(appState.source.displayName(for: source))
                                     if source == appState.currentSource {
                                         Image(systemName: "checkmark")
                                     }
@@ -92,9 +92,9 @@ struct BottomBar: View {
                         }
                     } label: {
                         HStack(spacing: 6) {
-                            Image(systemName: sourceIcon(for: appState.currentSource))
+                            Image(systemName: appState.source.symbolName(for: appState.currentSource))
                                 .font(.system(size: 12))
-                            Text(appState.currentSource.displayName)
+                            Text(appState.source.displayName(for: appState.currentSource))
                                 .font(.system(size: 12))
                             Image(systemName: "chevron.up.chevron.down")
                                 .font(.system(size: 8))
@@ -215,18 +215,6 @@ struct BottomBar: View {
                 .padding(.vertical, 12)
                 .background(Color(NSColor.controlBackgroundColor))
             }
-        }
-    }
-    
-    private func sourceIcon(for source: KEFSource) -> String {
-        switch source {
-        case .wifi: return "wifi"
-        case .bluetooth: return "dot.radiowaves.left.and.right"
-        case .tv: return "tv"
-        case .optic: return "fibrechannel"
-        case .coaxial: return "cable.connector"
-        case .analog: return "cable.connector.horizontal"
-        case .usb: return "cable.connector"
         }
     }
 }

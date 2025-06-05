@@ -54,7 +54,9 @@ enum Constants {
     /// App metadata
     enum App {
         static let name = "Kefir Menubar"
-        static let version = "1.0.0"
+        static let version: String = {
+            Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
+        }()
         static let githubURL = "https://github.com/melonamin/kefir"
         static let issuesURL = "https://github.com/melonamin/kefir/issues"
         static let copyright = "© 2024 Kefir Contributors"

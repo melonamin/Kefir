@@ -230,10 +230,10 @@ struct AboutTab: View {
                 }
                 
                 VStack(spacing: 4) {
-                    Text("Kefir Menubar")
+                    Text(Constants.App.name)
                         .font(.system(size: 20, weight: .semibold))
                     
-                    Text("Version 1.0.0")
+                    Text("Version \(Constants.App.version)")
                         .font(.system(size: 13))
                         .foregroundColor(.secondary)
                 }
@@ -269,7 +269,7 @@ struct AboutTab: View {
                 Divider()
                     .frame(width: 200)
                 
-                Text("© 2024 Kefir Contributors")
+                Text(Constants.App.copyright)
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
             }

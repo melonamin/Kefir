@@ -52,12 +52,12 @@ class SourceManager: ObservableObject {
     func symbolName(for source: KEFSource) -> String {
         switch source {
         case .wifi: return "wifi"
-        case .bluetooth: return "bluetooth"
+        case .bluetooth: return "dot.radiowaves.left.and.right"
         case .tv: return "tv"
         case .optic: return "fibrechannel"
-        case .coaxial: return "cable.coaxial"
-        case .analog: return "cable.connector"
-        case .usb: return "usb.port"
+        case .coaxial: return "cable.connector"
+        case .analog: return "cable.connector.horizontal"
+        case .usb: return "cable.connector"
         }
     }
 }
