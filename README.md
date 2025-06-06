@@ -1,3 +1,8 @@
+![macOS](https://img.shields.io/badge/macOS-13.0%2B-blue)
+[![Swift](https://img.shields.io/badge/Swift-6.1-orange.svg)](https://swift.org)
+[![KEF Compatible](https://img.shields.io/badge/KEF-LSX%20II%20%7C%20LS50%20II%20%7C%20LS60-purple.svg)](https://www.kef.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 <div align="center">
   <img src="Kefir/Assets.xcassets/AppIcon.appiconset/icon_256.png" alt="Kefir Logo" width="128" height="128">
 </div>
@@ -5,8 +10,8 @@
 # Kefir - KEF Speaker Control for macOS
 
 A beautiful menubar app that puts your KEF wireless speakers at your fingertips. Control volume, switch sources, and see what's playing - all without leaving your current task.
+> **Note**: [KefirCLI](https://github.com/melonamin/KefirCLI) offers the same features in the form of command line utility.
 
-![macOS](https://img.shields.io/badge/macOS-13.0%2B-blue)
 
 ## Screenshots
 
