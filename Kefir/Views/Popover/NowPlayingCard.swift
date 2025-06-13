@@ -55,10 +55,6 @@ struct NowPlayingCard: View {
                 }
                 
                 Spacer()
-                
-                if isPlaying {
-                    SoundWaveAnimation()
-                }
             }
             
             // Progress indicator
