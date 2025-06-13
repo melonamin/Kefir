@@ -311,7 +311,7 @@ struct MiniProgressBar: View {
     
     private func startTimer() {
         stopTimer()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             // Only update if playing and not at the end
             if isPlaying && displayPosition < Int64(duration) {
                 // Calculate elapsed time since last update
