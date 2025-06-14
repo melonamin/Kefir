@@ -66,7 +66,7 @@ enum Constants {
         }()
         static let githubURL = "https://github.com/melonamin/kefir"
         static let issuesURL = "https://github.com/melonamin/kefir/issues"
-        static let copyright = "© 2024 Kefir Contributors"
+        static let copyright = "© 2025 Ameba Labs"
     }
     
     /// System symbols
